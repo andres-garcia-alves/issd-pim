@@ -26,7 +26,7 @@ if uploaded_file is not None:
   # mostrar la imagen original
   st.subheader("Imagen Original")
   container_width = st.checkbox("ajustar tamaño", value=True)
-  asd = st.image(image, caption="Imagen Original", use_container_width=container_width)
+  st.image(image, caption="Imagen Original", use_container_width=container_width)
  
   # seleccionar el filtro
   st.write("")

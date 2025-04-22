@@ -37,7 +37,7 @@ else:
 
 # imagenes
 st.subheader("Imagenes")
-image = Image.open("recursos/goku.jpg")
+image = Image.open("../recursos/goku.jpg")
 st.image(image, caption="Goku") # use_container_width=True
 
 # widgets
@@ -69,7 +69,7 @@ st.pyplot(fig)
 # multimedia
 st.subheader("Multimedia")
 st.text("audio:")
-st.audio("recursos/las pelotas - sera.mp3")
+st.audio("../recursos/las pelotas - sera.mp3")
 st.text("video:")
 st.video("https://www.youtube.com/watch?v=SUMyyx7FCxQ")
 
