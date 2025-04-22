@@ -7,8 +7,8 @@ Repo para la materia Procesamiento de Imagen.
 ### Contenido
 
 - Clase 03 - Streamlit
-- Clase 03 - Filtros Básicos
-- Clase 03 - Transformacviones
+- Clase 04 - Filtros Básicos
+- Clase 05 - Transformaciones
 
 &nbsp;
 
