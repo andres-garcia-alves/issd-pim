@@ -44,16 +44,19 @@ def get_image_data(image_cv2):
 # ===========================================================================
 
 # construir un preview de la imagen y un boton de download
-def build_preview_download(processed_image, caption):
+def build_preview_download(processed_image, caption, use_container_width=True, checkbox_container_width=False):
   if processed_image is not None:
-    st.image(processed_image, caption=caption, use_container_width=True)
+    if checkbox_container_width:
+      use_container_width = st.checkbox('ajustar a la pantalla', value=use_container_width)
+
+    st.image(processed_image, caption=caption, use_container_width=use_container_width)
     st.download_button(label='⬇️ Descargar imagen', data=get_image_data(processed_image), file_name='imagen.jpg', mime='image/jpg')
 
 # construir el contenido para la 'barra de herramientas'
 def build_toolbar_menu_content():
-  menu_options = ['Escalado', 'Rotación', 'Traslación', 'Escala de Grises', 'Suavizado', 'Detectar Bordes']
-  menu_icons = ['arrows-fullscreen', 'arrow-counterclockwise', 'arrows-move', 'back', 'moon', 'arrow-down-right-square']
-  menu_styles = {
+  menu_options = ['Escalado', 'Rotación', 'Traslación', 'Escala de Grises', 'Suavizado', 'Detección de Bordes']
+  menu_icons   = ['arrows-fullscreen', 'arrow-counterclockwise', 'arrows-move', 'back', 'moon', 'arrow-down-right-square']
+  menu_styles  = {
     'icon': { 'color': 'white', 'font-size': '24px' },
     'nav-link': { 'font-size': '16px', 'text-align': 'center', 'margin': '0px', 'min-width': '100px' },
     'nav-link-selected': { 'background-color': '#4CAF50', 'color': 'white' }
@@ -61,6 +64,58 @@ def build_toolbar_menu_content():
 
   main_menu = option_menu('Editor de Imágenes', menu_icon='cast', options=menu_options, icons=menu_icons, styles=menu_styles, orientation='horizontal')
   return main_menu  
+
+# construir el contenido para la herramienta 'escalado'
+def build_rescale_content(uploaded_image):
+  st.subheader('Escalar')
+
+  interp_dic = { 'Cercanía': cv2.INTER_NEAREST, 'Lineal': cv2.INTER_LINEAR, 'Cúbica': cv2.INTER_CUBIC, 'Lanczos': cv2.INTER_LANCZOS4 }
+  interp_key = st.radio('Método de Interpolación', interp_dic.keys(), horizontal=True)
+  interp_value = interp_dic[interp_key] # buscar el 'value' para la 'key' seleccionada
+
+  col1, col2 = st.columns(2) # sliders para ajustar parámetros
+  with col1:  fx = st.slider('Ancho %', value=100, min_value=5, max_value=500, step=5)
+  with col2:  fy = st.slider('Alto %', value=100, min_value=5, max_value=500, step=5)
+
+  # escalar imagen
+  _, image_cv2 = parse_image(uploaded_image)
+  processed_image = cv2.resize(image_cv2, None, fx=fx/100, fy=fy/100, interpolation=interp_value)
+  build_preview_download(processed_image, 'imagen re-escalada', True, True)
+
+# construir el contenido para la herramienta 'rotacion'
+def build_rotate_content(uploaded_image):
+  st.subheader('Rotar')
+
+  col1, col2 = st.columns(2) # sliders para ajustar parámetros
+  with col1:  angle = st.slider('Angulo', value=45, min_value=0, max_value=360, step=5)
+  with col2:  scale = st.slider('Escala (tamaño original: 1.00)', value=1.0, min_value=0.1, max_value=2.0, step=0.1)
+
+  # rotar imagen
+  _, image_cv2 = parse_image(uploaded_image)
+  height, width, _ = image_cv2.shape
+  center = (width // 2, height // 2)
+
+  # crear la matriz de rotacion y aplicar la transformacion
+  M = cv2.getRotationMatrix2D(center, angle, scale)
+  processed_image = cv2.warpAffine(image_cv2, M, (width, height))
+  build_preview_download(processed_image, 'imagen rotada', True, True)
+
+# construir el contenido para la herramienta 'traslacion'
+def build_traslation_content(uploaded_image):
+  st.subheader('Trasladar')
+
+  _, image_cv2 = parse_image(uploaded_image)
+  height, width, _ = image_cv2.shape
+  #height, 
+
+  col1, col2 = st.columns(2) # sliders para ajustar parámetros
+  with col1:  x_axis = st.slider('Eje X', value=0, min_value=-width, max_value=width, step=1)
+  with col2:  y_axis = st.slider('Eje Y', value=0, min_value=-height, max_value=height, step=1)
+
+  # trasladar imagen
+  M = np.float32([ [1, 0, x_axis], [0, 1, y_axis] ])
+  processed_image = cv2.warpAffine(image_cv2, M, (y_axis, x_axis))
+  build_preview_download(processed_image, 'imagen trasladada')
 
 # construir el contenido para la herramienta 'escala de grises'
 def build_gray_scale_content(uploaded_image):
@@ -73,7 +128,7 @@ def build_gray_scale_content(uploaded_image):
 
 # construir el contenido para la herramienta 'suavizado'
 def build_smoothing_content(uploaded_image):
-  st.subheader("Suavizado")
+  st.subheader('Suavizar')
   sub_menu = st.selectbox('Método', ['Blur', 'Gaussiano'])
 
   if sub_menu == 'Blur':
@@ -85,7 +140,7 @@ def build_smoothing_content(uploaded_image):
     build_preview_download(processed_image, 'imagen suavizada')
 
   if sub_menu == 'Gaussiano':
-    col1, col2 = st.columns(2)                # sliders para ajustar parámetros
+    col1, col2 = st.columns(2) # sliders para ajustar parámetros
     with col1:  ksize = st.slider('Tamaño de Kernel', value=7, min_value=1, max_value=25, step=2) 
     with col2:  sigmaX = st.slider('Sigma X', value=0, min_value=0, max_value=10, step=1) 
 
@@ -101,7 +156,7 @@ def build_edge_detection_content(uploaded_image):
   sub_menu = st.selectbox('Método', ['Canny', 'Sobel'])
 
   if sub_menu == 'Canny':
-    col1, col2 = st.columns(2)              # sliders para ajustar parámetros
+    col1, col2 = st.columns(2) # sliders para ajustar parámetros
     with col1:  threshold1 = st.slider("Umbral 1 (borde débil)", value=100, min_value=0, max_value=255, step=1)
     with col2:  threshold2 = st.slider("Umbral 2 (borde fuerte)", value=200, min_value=0, max_value=255, step=1)
 
@@ -129,10 +184,8 @@ def build_edge_detection_content(uploaded_image):
 #  MENU LATERAL
 # ===========================================================================
 sidebar_options = ['Inicio', 'Procesar', 'Acerca de']
-sidebar_icons = ['house', 'gear', 'info-circle']
-sidebar_styles = {
-  'nav-link-selected': { 'background-color': '#4CAF50', 'color': 'white', 'font-weight': 'normal' }
-}
+sidebar_icons   = ['house', 'gear', 'info-circle']
+sidebar_styles  = { 'nav-link-selected': { 'background-color': '#4CAF50', 'color': 'white', 'font-weight': 'normal' } }
 with st.sidebar:
   sidebar = option_menu('Menú Principal', sidebar_options, menu_icon='cast', icons=sidebar_icons, styles=sidebar_styles, default_index=0)
 
@@ -143,17 +196,17 @@ with st.sidebar:
 if sidebar == 'Inicio':
 
   # subir de una imagen
-  st.subheader("📷 Sube una imagen para comenzar")
-  uploaded_image = st.file_uploader("upload photo", type=["jpg", "png", "gif", "jpeg"], label_visibility='hidden')
+  st.subheader('📷 Sube una imagen para comenzar')
+  uploaded_image = st.file_uploader("upload photo", type=['jpg', 'png', 'gif', 'jpeg'], label_visibility='hidden')
 
   if uploaded_image is not None:
     st.session_state.uploaded_image = uploaded_image  # guardar en sesion
     image, image_np = parse_image(uploaded_image)     # procesar imagen
 
     # mostrar la imagen original
-    st.subheader("Imagen Original")
-    container_width = st.checkbox("ajustar a la pantalla", value=True)
-    st.image(image, caption="imagen original", use_container_width=container_width)
+    st.subheader('Imagen Original')
+    container_width = st.checkbox('ajustar a la pantalla', value=True)
+    st.image(image, caption='imagen original', use_container_width=container_width)
 
 
 # ===========================================================================
@@ -163,13 +216,22 @@ if sidebar == 'Procesar':
   
   main_menu = build_toolbar_menu_content()  # mostrar la barra de herramientas
 
+  if main_menu == 'Escalado' and uploaded_image is not None:
+    build_rescale_content(uploaded_image)
+
+  if main_menu == 'Rotación' and uploaded_image is not None:
+    build_rotate_content(uploaded_image)
+
+  if main_menu == 'Traslación' and uploaded_image is not None:
+    build_traslation_content(uploaded_image)
+
   if main_menu == 'Escala de Grises' and uploaded_image is not None:
     build_gray_scale_content(uploaded_image)
 
   if main_menu == 'Suavizado' and uploaded_image is not None:
     build_smoothing_content(uploaded_image)
 
-  if main_menu == 'Detectar Bordes' and uploaded_image is not None:
+  if main_menu == 'Detección de Bordes' and uploaded_image is not None:
     build_edge_detection_content(uploaded_image)
 
 
