@@ -1,6 +1,6 @@
 import cv2
 
-imagen = cv2.imread("../recursos/goku.jpg")
+imagen = cv2.imread("../Recursos/goku.jpg")
 
 (h, w) = imagen.shape[:2]   # alto, ancho
 centro = (w // 2, h // 2)   # centro de la imagen

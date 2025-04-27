@@ -1,6 +1,6 @@
 import cv2
 
-imagen = cv2.imread("../recursos/goku.jpg")
+imagen = cv2.imread("../Recursos/goku.jpg")
 
 ancho, alto = (1092, 736)    # escalado x4, original 273x184
 imagen_redim1 = cv2.resize(imagen, (ancho, alto), interpolation=cv2.INTER_NEAREST)

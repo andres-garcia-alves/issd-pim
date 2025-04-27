@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # cargar la imagen
-image = cv2.imread("../recursos/goku.jpg")
+image = cv2.imread("../Recursos/goku.jpg")
 
 # aplicar filto Gausiano con un kernel de 5x5
 gaussian_image = cv2.GaussianBlur(image, (5, 5), 0)

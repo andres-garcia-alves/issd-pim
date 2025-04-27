@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # cargar la imagen
-image = cv2.imread("../recursos/goku.jpg", cv2.IMREAD_GRAYSCALE)
+image = cv2.imread("../Recursos/goku.jpg", cv2.IMREAD_GRAYSCALE)
 
 # aplicar filto Sobel en dirección horizontal y vertical
 sobel_x = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=3)

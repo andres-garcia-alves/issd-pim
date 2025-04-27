@@ -1,6 +1,6 @@
 import cv2
 
-imagen = cv2.imread("../recursos/goku.jpg")
+imagen = cv2.imread("../Recursos/goku.jpg")
 
 x1, y1 = (50, 25)               # punto superior-izquierdo
 x2, y2 = (x1 + 175, y1 + 100)   # punto inferior-derecho

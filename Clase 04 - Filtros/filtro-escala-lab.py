@@ -1,6 +1,6 @@
 import cv2
 
-imagen = cv2.imread("../recursos/goku.jpg")
+imagen = cv2.imread("../Recursos/goku.jpg")
 
 imagen_lab = cv2.cvtColor(imagen, cv2.COLOR_BGR2LAB)
 l, a, b = cv2.split(imagen_lab)

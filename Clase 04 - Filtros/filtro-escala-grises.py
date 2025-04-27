@@ -1,6 +1,6 @@
 import cv2
 
-imagen = cv2.imread("../recursos/goku.jpg")
+imagen = cv2.imread("../Recursos/goku.jpg")
 
 imagen_grises = cv2.cvtColor(imagen, cv2.COLOR_BGR2GRAY)
 

@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # cargar la imagen
-image = cv2.imread("../recursos/goku.jpg")
+image = cv2.imread("../Recursos/goku.jpg")
 
 # aplicar filto Blur (promedio) con un kernel de 5x5
 blur_image = cv2.blur(image, (5, 5))

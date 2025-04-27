@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # cargar la imagen
-image = cv2.imread("../recursos/goku.jpg")
+image = cv2.imread("../Recursos/goku.jpg")
 rows, cols = image.shape[:2]
 
 # definir el punto de rotacion (centro de la imagen) y el angulo

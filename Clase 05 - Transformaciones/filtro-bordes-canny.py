@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # cargar la imagen
-image = cv2.imread("../recursos/goku.jpg", cv2.IMREAD_GRAYSCALE)
+image = cv2.imread("../Recursos/goku.jpg", cv2.IMREAD_GRAYSCALE)
 
 # aplicar filto Canny
 canny_image = cv2.Canny(image, 100, 200)
