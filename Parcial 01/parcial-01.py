@@ -13,7 +13,7 @@ from streamlit_option_menu import option_menu
 
 st.set_page_config(
   page_title='ISSD | PIM',
-  page_icon='https://scontent.faep14-2.fna.fbcdn.net/v/t39.30808-1/327150003_523784383191096_5904817411255877040_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=101&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=_NRJnLd07jkQ7kNvwGZdfvG&_nc_oc=Adnv_hx_D0H3b1U8_pcnk-ZI4E2GTnoQEBojoMJF8WkuU4SXSQkvKPtK1Mz-MCq6dp8&_nc_zt=24&_nc_ht=scontent.faep14-2.fna&_nc_gid=yvuDKnCmBWwmXCTbE24qsA&oh=00_AfEb3L19hCYCt_xzzCbz80MwRIa8BhRPUsuRuMCEi_W56w&oe=6813E134',
+  page_icon='https://raw.githubusercontent.com/andres-garcia-alves/issd-pim/refs/heads/main/Parcial%2001/issd.png',
   layout='wide'
 )
 
