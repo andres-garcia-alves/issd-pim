@@ -24,19 +24,19 @@ st.set_page_config(
 )
 
 # variables de sesion
-uploaded_image = st.session_state.get('uploaded_image', None)   # valor x default: None
+uploaded_image = st.session_state.get('uploaded_image', None) # valor x default: None
 
 # funcion auxiliar: convertir una imagen de Streamlit en imagenes para PIL y CV2
 def parse_image(uploaded_image):
-  image = Image.open(uploaded_image)          # convertir a formato PIL
-  image_cv2 = np.array(image)                 # convertir a array para CV2
+  image = Image.open(uploaded_image)            # convertir a formato PIL
+  image_cv2 = np.array(image)                   # convertir a array para CV2
   return image, image_cv2
 
 # funcion auxiliar: obtener un buffer de la imagen para su descarga
 def get_image_data(image_cv2):
-  _, buffer = cv2.imencode('.jpg', image_cv2) # codificar a JPG
-  io_bytes = io.BytesIO(buffer)               # buffer en memoria (stream)
-  return io_bytes
+  image_rgb = cv2.cvtColor(image_cv2, cv2.COLOR_BGR2RGB)  # covertir BGR a RGB
+  _, buffer = cv2.imencode('.jpg', image_rgb)   # codificar a JPG
+  return io.BytesIO(buffer)                     # retornar el buffer en memoria (stream)
 
 
 # ===========================================================================
@@ -62,34 +62,39 @@ def build_toolbar_menu_content():
   main_menu = option_menu('Editor de Imágenes', menu_icon='cast', options=menu_options, icons=menu_icons, styles=menu_styles, orientation='horizontal')
   return main_menu  
 
-# construir el contenido para 'escala de grises'
+# construir el contenido para la herramienta 'escala de grises'
 def build_gray_scale_content(uploaded_image):
   st.subheader("Escala de Grises")
 
   # aplicar escala de grises
-  image, image_cv2 = parse_image(uploaded_image)
+  _, image_cv2 = parse_image(uploaded_image)
   processed_image = cv2.cvtColor(image_cv2, cv2.COLOR_RGB2GRAY)
   build_preview_download(processed_image, 'imagen en escala de grises')
 
-# construir el contenido para 'suavizado'
+# construir el contenido para la herramienta 'suavizado'
 def build_smoothing_content(uploaded_image):
   st.subheader("Suavizado")
   sub_menu = st.selectbox('Método', ['Blur', 'Gaussiano'])
 
   if sub_menu == 'Blur':
-    st.write('blur ...')
+    kernel = st.slider('Tamaño de Kernel', value=1, min_value=1, max_value=25, step=1)
+
+    # aplicar suavizado
+    _, image_cv2 = parse_image(uploaded_image)
+    processed_image = cv2.blur(image_cv2, ksize=(kernel, kernel))
+    build_preview_download(processed_image, 'imagen suavizada')
 
   if sub_menu == 'Gaussiano':
     col1, col2 = st.columns(2)                # sliders para ajustar parámetros
-    with col1:  ksize = st.slider('Tamaño de Kernel', min_value=1, max_value=25, value=7, step=2) 
-    with col2:  sigmaX = st.slider('Sigma X', min_value=0, max_value=10, value=0, step=1) 
+    with col1:  ksize = st.slider('Tamaño de Kernel', value=7, min_value=1, max_value=25, step=2) 
+    with col2:  sigmaX = st.slider('Sigma X', value=0, min_value=0, max_value=10, step=1) 
 
     # aplicar suavizado
-    image, image_cv2 = parse_image(uploaded_image)
+    _, image_cv2 = parse_image(uploaded_image)
     processed_image = cv2.GaussianBlur(image_cv2, ksize=(ksize, ksize), sigmaX=sigmaX)
     build_preview_download(processed_image, 'imagen suavizada')
 
-# construir el contenido para 'detección de bordes'
+# construir el contenido para la herramienta 'detección de bordes'
 def build_edge_detection_content(uploaded_image):
   processed_image = None
   st.subheader('Detección de Bordes')
@@ -97,29 +102,28 @@ def build_edge_detection_content(uploaded_image):
 
   if sub_menu == 'Canny':
     col1, col2 = st.columns(2)              # sliders para ajustar parámetros
-    with col1:  threshold1 = st.slider("Umbral 1 (borde débil)", min_value=0, max_value=255, value=100, step=1)
-    with col2:  threshold2 = st.slider("Umbral 2 (borde fuerte)", min_value=0, max_value=255, value=200, step=1)
+    with col1:  threshold1 = st.slider("Umbral 1 (borde débil)", value=100, min_value=0, max_value=255, step=1)
+    with col2:  threshold2 = st.slider("Umbral 2 (borde fuerte)", value=200, min_value=0, max_value=255, step=1)
 
     # aplicar escala de grises y luego detectar bordes
-    image, image_cv2 = parse_image(uploaded_image)
-    gray_image = cv2.cvtColor(image_cv2, cv2.COLOR_RGB2GRAY)
-    processed_image = cv2.Canny(gray_image, threshold1=threshold1, threshold2=threshold2)
+    _, image_cv2 = parse_image(uploaded_image)
+    processed_image = cv2.cvtColor(image_cv2, cv2.COLOR_RGB2GRAY)
+    processed_image = cv2.Canny(processed_image, threshold1=threshold1, threshold2=threshold2)
     build_preview_download(processed_image, 'bordes detectados')
 
   if sub_menu == 'Sobel':
-    st.write('sobel ...')
-    # col1, col2 = st.columns(2)            # sliders para ajustar parámetros
-    # with col1:  threshold1 = st.slider("Umbral 1 (borde débil)", min_value=0, max_value=255, value=100, step=1)
-    # with col2:  threshold2 = st.slider("Umbral 2 (borde fuerte)", min_value=0, max_value=255, value=200, step=1)
+    kernel = st.slider('Tamaño de Kernel', value=1, min_value=1, max_value=25, step=2)
 
-    # # aplicar escala de grises y luego detectar bordes
-    # image, image_cv2 = parse_image(uploaded_image)
-    # gray_image = cv2.cvtColor(image_cv2, cv2.COLOR_RGB2GRAY)
-    # processed_image = cv2.Canny(gray_image, threshold1=threshold1, threshold2=threshold2)
+    _, image_cv2 = parse_image(uploaded_image)
+    image_cv2 = cv2.cvtColor(image_cv2, cv2.COLOR_RGB2GRAY)         # convertir a escala de grises
 
-    # # vista previa
-    # st.image(processed_image, caption="bordes detectados", use_container_width=True)
+    sobel_x = cv2.Sobel(image_cv2, cv2.CV_64F, 1, 0, ksize=kernel)  # bordes horizontales
+    sobel_y = cv2.Sobel(image_cv2, cv2.CV_64F, 0, 1, ksize=kernel)  # bordes verticales
+    sobel_comb = cv2.magnitude(sobel_x, sobel_y)                    # magnitud combinada de los bordes
 
+    processed_image = cv2.normalize(sobel_comb, None, 0, 255, cv2.NORM_MINMAX) # normalizar a rango 0-255
+    processed_image = processed_image.astype(np.uint8)              # covertir de float a byte para st.image()
+    build_preview_download(processed_image, 'bordes detectados')
 
 # ===========================================================================
 #  MENU LATERAL
@@ -157,7 +161,7 @@ if sidebar == 'Inicio':
 # ===========================================================================
 if sidebar == 'Procesar':
   
-  main_menu = build_toolbar_menu_content()    # mostrar la barra de herramientas
+  main_menu = build_toolbar_menu_content()  # mostrar la barra de herramientas
 
   if main_menu == 'Escala de Grises' and uploaded_image is not None:
     build_gray_scale_content(uploaded_image)
