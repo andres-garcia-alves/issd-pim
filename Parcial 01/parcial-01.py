@@ -69,17 +69,30 @@ def build_toolbar_menu_content():
 def build_rescale_content(uploaded_image):
   st.subheader('Escalar')
 
+  _, image_cv2 = parse_image(uploaded_image)
+  height, width, _ = image_cv2.shape
+
+  # metodo de interpolacion
   interp_dic = { 'Cercanía': cv2.INTER_NEAREST, 'Lineal': cv2.INTER_LINEAR, 'Cúbica': cv2.INTER_CUBIC, 'Lanczos': cv2.INTER_LANCZOS4 }
   interp_key = st.radio('Método de Interpolación', interp_dic.keys(), horizontal=True)
   interp_value = interp_dic[interp_key] # buscar el 'value' para la 'key' seleccionada
 
-  col1, col2 = st.columns(2) # sliders para ajustar parámetros
-  with col1:  fx = st.slider('Ancho %', value=100, min_value=5, max_value=500, step=5)
-  with col2:  fy = st.slider('Alto %', value=100, min_value=5, max_value=500, step=5)
+  # ajustar por porcentajes vs especificar pixels
+  adjustment = st.radio('Ajustar', ['Porcentaje', 'Pixels'], horizontal=True)
+
+  if adjustment == 'Porcentaje':
+    col1, col2 = st.columns(2) # sliders para ajustar parámetros
+    with col1:  factor_x = st.slider('Ancho (%)', value=100, min_value=5, max_value=500, step=5)
+    with col2:  factor_y = st.slider('Alto (%)', value=100, min_value=5, max_value=500, step=5)
+    processed_image = cv2.resize(image_cv2, None, fx=factor_x/100, fy=factor_y/100, interpolation=interp_value)
+
+  else:
+    col1, col2 = st.columns(2) # sliders para ajustar parámetros
+    with col1:  pixels_x = st.slider('Ancho (pixels)', value=width, min_value=1, max_value=height*5, step=1)
+    with col2:  pixels_y = st.slider('Alto (pixels)', value=height, min_value=1, max_value=width*5, step=1)
+    processed_image = cv2.resize(image_cv2, dsize=(pixels_x, pixels_y), interpolation=interp_value)
 
   # escalar imagen
-  _, image_cv2 = parse_image(uploaded_image)
-  processed_image = cv2.resize(image_cv2, None, fx=fx/100, fy=fy/100, interpolation=interp_value)
   build_preview_download(processed_image, 'imagen re-escalada', True, True)
 
 # construir el contenido para la herramienta 'rotacion'
