@@ -50,7 +50,7 @@ def build_preview_download(processed_image, caption, use_container_width=True, c
       use_container_width = st.checkbox('ajustar a la pantalla', value=use_container_width)
 
     st.image(processed_image, caption=caption, use_container_width=use_container_width)
-    st.download_button(label='⬇️ Descargar imagen', data=get_image_data(processed_image), file_name='imagen.jpg', mime='image/jpg')
+    st.download_button(label='⬇️ Descargar Imagen', data=get_image_data(processed_image), file_name='imagen.jpg', mime='image/jpg')
 
 # construir el contenido para la 'barra de herramientas'
 def build_toolbar_menu_content():
@@ -62,7 +62,7 @@ def build_toolbar_menu_content():
     'nav-link-selected': { 'background-color': '#4CAF50', 'color': 'white' }
   }
 
-  main_menu = option_menu('Editor de Imágenes', menu_icon='cast', options=menu_options, icons=menu_icons, styles=menu_styles, orientation='horizontal')
+  main_menu = option_menu('Herramientas', options=menu_options, menu_icon='gear', icons=menu_icons, styles=menu_styles, orientation='horizontal')
   return main_menu  
 
 # construir el contenido para la herramienta 'escalado'
@@ -196,8 +196,8 @@ def build_edge_detection_content(uploaded_image):
 # ===========================================================================
 #  MENU LATERAL
 # ===========================================================================
-sidebar_options = ['Inicio', 'Procesar', 'Acerca de']
-sidebar_icons   = ['house', 'gear', 'info-circle']
+sidebar_options = ['Inicio', 'Procesar', 'Estadísticas', 'Acerca de']
+sidebar_icons   = ['house', 'gear', 'calculator', 'info-circle']
 sidebar_styles  = { 'nav-link-selected': { 'background-color': '#4CAF50', 'color': 'white', 'font-weight': 'normal' } }
 with st.sidebar:
   sidebar = option_menu('Menú Principal', sidebar_options, menu_icon='cast', icons=sidebar_icons, styles=sidebar_styles, default_index=0)
@@ -247,6 +247,12 @@ if sidebar == 'Procesar':
   if main_menu == 'Detección de Bordes' and uploaded_image is not None:
     build_edge_detection_content(uploaded_image)
 
+
+# ===========================================================================
+# PAGINA 'ESTADISTICAS' (histograma, etc)
+# ===========================================================================
+if sidebar == 'Estadísticas':
+  st.write('Estadísticas de la imagen ...')
 
 # ===========================================================================
 # PAGINA 'ACERCA DE'
