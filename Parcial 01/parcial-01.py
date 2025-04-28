@@ -5,12 +5,6 @@ from PIL import Image
 import streamlit as st
 from streamlit_option_menu import option_menu
 
-# otra opción ...
-# def on_change(key):
-#   st.write(f"Selection changed to { st.session_state[key] }")
-#   main_menu_2 = option_menu(key='menu_5', menu_title='', options=["Home", "Upload", "Tasks", 'Settings'],
-#     icons=['house', 'cloud-upload', "list-task", 'gear'], orientation="horizontal", on_change=on_change)
-
 
 # ===========================================================================
 # CONFIG. DE PAG. + VARIABLES DE SESION + FUNCIONES AUXILIARES
@@ -23,7 +17,7 @@ st.set_page_config(
   layout='centered' # posibles valores: centered, wide
 )
 
-# variables de sesion
+# variable de sesion
 uploaded_image = st.session_state.get('uploaded_image', None) # valor x default: None
 
 # funcion auxiliar: convertir una imagen de Streamlit en imagenes para PIL y CV2
@@ -193,15 +187,16 @@ def build_edge_detection_content(uploaded_image):
     processed_image = processed_image.astype(np.uint8)              # covertir de float a byte para st.image()
     build_preview_download(processed_image, 'bordes detectados')
 
+
 # ===========================================================================
 #  MENU LATERAL
 # ===========================================================================
-sidebar_options = ['Inicio', 'Procesar', 'Estadísticas', 'Acerca de']
+sidebar_options = ['Inicio', 'Herramientas', 'Métricas', 'Acerca de']
 sidebar_icons   = ['house', 'gear', 'calculator', 'info-circle']
 sidebar_styles  = { 'nav-link-selected': { 'background-color': '#4CAF50', 'color': 'white', 'font-weight': 'normal' } }
-with st.sidebar:
-  sidebar = option_menu('Menú Principal', sidebar_options, menu_icon='cast', icons=sidebar_icons, styles=sidebar_styles, default_index=0)
 
+with st.sidebar:
+  sidebar = option_menu('Menú Principal', sidebar_options, menu_icon='cast', icons=sidebar_icons, default_index=0, styles=sidebar_styles)
 
 # ===========================================================================
 # PAGINA 'INICIO'
@@ -210,9 +205,11 @@ if sidebar == 'Inicio':
 
   # subir de una imagen
   st.subheader('📷 Sube una imagen para comenzar')
+  st.text("👉🏻 Luego selecciona '⚙️ Herramientas' del menú lateral cuando estés listo para continuar.")
   uploaded_image = st.file_uploader("upload photo", type=['jpg', 'png', 'gif', 'jpeg'], label_visibility='hidden')
 
   if uploaded_image is not None:
+    
     st.session_state.uploaded_image = uploaded_image  # guardar en sesion
     image, image_np = parse_image(uploaded_image)     # procesar imagen
 
@@ -223,10 +220,10 @@ if sidebar == 'Inicio':
 
 
 # ===========================================================================
-# PAGINA 'PROCESAR'
+# PAGINA 'HERRAMIENTAS'
 # ===========================================================================
-if sidebar == 'Procesar':
-  
+if sidebar == 'Herramientas':
+
   main_menu = build_toolbar_menu_content()  # mostrar la barra de herramientas
 
   if main_menu == 'Escalado' and uploaded_image is not None:
@@ -251,8 +248,8 @@ if sidebar == 'Procesar':
 # ===========================================================================
 # PAGINA 'ESTADISTICAS' (histograma, etc)
 # ===========================================================================
-if sidebar == 'Estadísticas':
-  st.write('Estadísticas de la imagen ...')
+if sidebar == 'Métricas':
+  st.write('Métricas de la imagen: histograma, etc ...')
 
 # ===========================================================================
 # PAGINA 'ACERCA DE'
