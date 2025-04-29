@@ -261,7 +261,7 @@ if sidebar == 'Herramientas':
   if main_menu == 'Suavizado' and uploaded_image is not None:
     build_smoothing_content(uploaded_image)
 
-  if main_menu == 'Brillo+Saturación' and uploaded_image is not None:
+  if main_menu == 'Brillo & Saturación' and uploaded_image is not None:
     build_brightness_content(uploaded_image)
 
   if main_menu == 'Detección de Bordes' and uploaded_image is not None:
