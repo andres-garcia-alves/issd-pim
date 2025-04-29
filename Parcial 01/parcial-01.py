@@ -14,7 +14,7 @@ from streamlit_option_menu import option_menu
 st.set_page_config(
   page_title='ISSD | PIM',
   page_icon='https://raw.githubusercontent.com/andres-garcia-alves/issd-pim/refs/heads/main/Parcial%2001/issd-icon.png',
-  layout='centered' # posibles valores: centered, wide
+  layout='wide' # posibles valores: centered, wide
 )
 
 # variable de sesion
@@ -39,11 +39,11 @@ def get_image_data(image_cv2):
 
 # construir el contenido para la 'barra de herramientas'
 def build_toolbar_menu_content():
-  menu_options = ['Escalado', 'Rotación', 'Traslación', 'Escala de Grises', 'Suavizado', 'Brillo+Saturación', 'Detección de Bordes']
+  menu_options = ['Escalado', 'Rotación', 'Traslación', 'Escala de Grises', 'Suavizado', 'Brillo & Saturación', 'Detección de Bordes']
   menu_icons   = ['arrows-fullscreen', 'arrow-counterclockwise', 'arrows-move', 'back', 'moon', 'brightness-high', 'arrow-down-right-square']
   menu_styles  = {
     'icon': { 'color': 'white', 'font-size': '24px' },
-    'nav-link': { 'font-size': '16px', 'text-align': 'center', 'margin': '0px', 'min-width': '100px' },
+    'nav-link': { 'font-size': '16px', 'text-align': 'center', 'margin': '0px', 'min-width': '100px', 'max-width': '130px' },
     'nav-link-selected': { 'background-color': '#4CAF50', 'color': 'white' }
   }
 
@@ -272,13 +272,19 @@ if sidebar == 'Herramientas':
 # PAGINA 'ESTADISTICAS' (histograma, etc)
 # ===========================================================================
 if sidebar == 'Métricas':
-  st.subheader('Histograma')
 
   if uploaded_image is not None:
+
     image, image_cv2 = parse_image(uploaded_image)
 
     # mostrar la imagen original
-    st.image(image, caption='imagen original', use_container_width=True)
+    st.subheader('Imagen')
+    st.text('')
+    st.image(image, caption='imagen original', use_container_width=False)
+    st.text('')
+
+    st.subheader('Histograma')
+    st.text('')
 
     # calcular el histograma
     histogram = cv2.calcHist([image_cv2], [0], None, [256], [0, 256])
@@ -291,7 +297,7 @@ if sidebar == 'Métricas':
     plt.xlabel("Niveles de intensidad")
     plt.ylabel("Frecuencia")
     plt.grid()
-    st.pyplot(plt)  # renderizar el gráfico
+    st.pyplot(plt, )  # renderizar el gráfico
 
   else:
     st.text('👉🏻 Sube una imagen para visualizar sus métricas.')
