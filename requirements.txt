@@ -1,5 +1,6 @@
+numpy
+matplotlib
+pillow
+opencv-python-headless
 streamlit
 streamlit_option_menu
-opencv-python-headless
-numpy
-pillow
