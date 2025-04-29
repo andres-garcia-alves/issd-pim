@@ -1,10 +1,10 @@
 import io
 import numpy as np
+import matplotlib.pyplot as plt
 import cv2
 from PIL import Image
 import streamlit as st
 from streamlit_option_menu import option_menu
-
 
 # ===========================================================================
 # CONFIG. DE PAG. + VARIABLES DE SESION + FUNCIONES AUXILIARES
@@ -37,19 +37,10 @@ def get_image_data(image_cv2):
 # CONSTRUIR y MOSTRAR SUB-CONTENIDOS DE LAS PAGINAS
 # ===========================================================================
 
-# construir un preview de la imagen y un boton de download
-def build_preview_download(processed_image, caption, use_container_width=True, checkbox_container_width=False):
-  if processed_image is not None:
-    if checkbox_container_width:
-      use_container_width = st.checkbox('ajustar a la pantalla', value=use_container_width)
-
-    st.image(processed_image, caption=caption, use_container_width=use_container_width)
-    st.download_button(label='⬇️ Descargar Imagen', data=get_image_data(processed_image), file_name='imagen.jpg', mime='image/jpg')
-
 # construir el contenido para la 'barra de herramientas'
 def build_toolbar_menu_content():
-  menu_options = ['Escalado', 'Rotación', 'Traslación', 'Escala de Grises', 'Suavizado', 'Detección de Bordes']
-  menu_icons   = ['arrows-fullscreen', 'arrow-counterclockwise', 'arrows-move', 'back', 'moon', 'arrow-down-right-square']
+  menu_options = ['Escalado', 'Rotación', 'Traslación', 'Escala de Grises', 'Suavizado', 'Brillo+Saturación', 'Detección de Bordes']
+  menu_icons   = ['arrows-fullscreen', 'arrow-counterclockwise', 'arrows-move', 'back', 'moon', 'brightness-high', 'arrow-down-right-square']
   menu_styles  = {
     'icon': { 'color': 'white', 'font-size': '24px' },
     'nav-link': { 'font-size': '16px', 'text-align': 'center', 'margin': '0px', 'min-width': '100px' },
@@ -75,13 +66,13 @@ def build_rescale_content(uploaded_image):
   adjustment = st.radio('Ajustar', ['Porcentaje', 'Pixels'], horizontal=True)
 
   if adjustment == 'Porcentaje':
-    col1, col2 = st.columns(2) # sliders para ajustar parámetros
+    col1, col2 = st.columns(2) # sliders para ajustar los parámetros
     with col1:  factor_x = st.slider('Ancho (%)', value=100, min_value=5, max_value=500, step=5)
     with col2:  factor_y = st.slider('Alto (%)', value=100, min_value=5, max_value=500, step=5)
     processed_image = cv2.resize(image_cv2, None, fx=factor_x/100, fy=factor_y/100, interpolation=interp_value)
 
   else:
-    col1, col2 = st.columns(2) # sliders para ajustar parámetros
+    col1, col2 = st.columns(2) # sliders para ajustar los parámetros
     with col1:  pixels_x = st.slider('Ancho (pixels)', value=width, min_value=1, max_value=height*5, step=1)
     with col2:  pixels_y = st.slider('Alto (pixels)', value=height, min_value=1, max_value=width*5, step=1)
     processed_image = cv2.resize(image_cv2, dsize=(pixels_x, pixels_y), interpolation=interp_value)
@@ -93,7 +84,7 @@ def build_rescale_content(uploaded_image):
 def build_rotate_content(uploaded_image):
   st.subheader('Rotar')
 
-  col1, col2 = st.columns(2) # sliders para ajustar parámetros
+  col1, col2 = st.columns(2) # sliders para ajustar los parámetros
   with col1:  angle = st.slider('Angulo', value=45, min_value=0, max_value=360, step=5)
   with col2:  scale = st.slider('Escala (tamaño original: 1.00)', value=1.0, min_value=0.1, max_value=2.0, step=0.1)
 
@@ -115,7 +106,7 @@ def build_traslation_content(uploaded_image):
   height, width, _ = image_cv2.shape
   #height, 
 
-  col1, col2 = st.columns(2) # sliders para ajustar parámetros
+  col1, col2 = st.columns(2) # sliders para ajustar los parámetros
   with col1:  x_axis = st.slider('Eje X', value=0, min_value=-width, max_value=width, step=1)
   with col2:  y_axis = st.slider('Eje Y', value=0, min_value=-height, max_value=height, step=1)
 
@@ -135,26 +126,44 @@ def build_gray_scale_content(uploaded_image):
 
 # construir el contenido para la herramienta 'suavizado'
 def build_smoothing_content(uploaded_image):
-  st.subheader('Suavizar')
-  sub_menu = st.selectbox('Método', ['Blur', 'Gaussiano'])
+  st.subheader('Suavizado')
+  _, image_cv2 = parse_image(uploaded_image)
 
+  sub_menu = st.selectbox('Método', ['Blur', 'Gaussiano'])
   if sub_menu == 'Blur':
     kernel = st.slider('Tamaño de Kernel', value=1, min_value=1, max_value=25, step=1)
 
-    # aplicar suavizado
-    _, image_cv2 = parse_image(uploaded_image)
+    # aplicar suavizado blur
     processed_image = cv2.blur(image_cv2, ksize=(kernel, kernel))
     build_preview_download(processed_image, 'imagen suavizada')
 
   if sub_menu == 'Gaussiano':
-    col1, col2 = st.columns(2) # sliders para ajustar parámetros
+    col1, col2 = st.columns(2) # sliders para ajustar los parámetros
     with col1:  ksize = st.slider('Tamaño de Kernel', value=7, min_value=1, max_value=25, step=2) 
     with col2:  sigmaX = st.slider('Sigma X', value=0, min_value=0, max_value=10, step=1) 
 
-    # aplicar suavizado
-    _, image_cv2 = parse_image(uploaded_image)
+    # aplicar suavizado gaussiano
     processed_image = cv2.GaussianBlur(image_cv2, ksize=(ksize, ksize), sigmaX=sigmaX)
     build_preview_download(processed_image, 'imagen suavizada')
+
+# construir el contenido para la herramienta 'brillo y saturacion'
+def build_brightness_content(uploaded_image):
+  st.subheader('Ajuste de Brillo y Saturación')
+  _, image_cv2 = parse_image(uploaded_image)
+
+  sub_menu = st.selectbox('Método', ['Manual', 'Automático'])
+  if sub_menu == 'Manual':
+    col1, col2 = st.columns(2) # sliders para ajustar los parámetros
+    with col1:  brightness = st.slider("Brillo", value=0, min_value=-100, max_value=100, step=1)
+    with col2:  contrast = st.slider("Contraste", value=1.0, min_value=0.5, max_value=3.0, step=0.1)
+
+    # ajuste de brillo y contraste
+    processed_image = cv2.convertScaleAbs(image_cv2, alpha=contrast, beta=brightness)
+    build_preview_download(processed_image, 'imagen ajustada')
+
+  if sub_menu == 'Automático':
+    processed_image = cv2.normalize(image_cv2, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+    build_preview_download(processed_image, 'imagen ajustada')
 
 # construir el contenido para la herramienta 'detección de bordes'
 def build_edge_detection_content(uploaded_image):
@@ -163,7 +172,7 @@ def build_edge_detection_content(uploaded_image):
   sub_menu = st.selectbox('Método', ['Canny', 'Sobel'])
 
   if sub_menu == 'Canny':
-    col1, col2 = st.columns(2) # sliders para ajustar parámetros
+    col1, col2 = st.columns(2) # sliders para ajustar los parámetros
     with col1:  threshold1 = st.slider("Umbral 1 (borde débil)", value=100, min_value=0, max_value=255, step=1)
     with col2:  threshold2 = st.slider("Umbral 2 (borde fuerte)", value=200, min_value=0, max_value=255, step=1)
 
@@ -187,6 +196,15 @@ def build_edge_detection_content(uploaded_image):
     processed_image = processed_image.astype(np.uint8)              # covertir de float a byte para st.image()
     build_preview_download(processed_image, 'bordes detectados')
 
+# construir un preview de la imagen y un boton de download
+def build_preview_download(processed_image, caption, use_container_width=True, checkbox_container_width=False):
+  if processed_image is not None:
+    if checkbox_container_width:
+      use_container_width = st.checkbox('ajustar a la pantalla', value=use_container_width)
+
+    st.image(processed_image, caption=caption, use_container_width=use_container_width)
+    st.download_button(label='⬇️ Descargar Imagen', data=get_image_data(processed_image), file_name='imagen.jpg', mime='image/jpg')
+
 
 # ===========================================================================
 #  MENU LATERAL
@@ -197,6 +215,7 @@ sidebar_styles  = { 'nav-link-selected': { 'background-color': '#4CAF50', 'color
 
 with st.sidebar:
   sidebar = option_menu('Menú Principal', sidebar_options, menu_icon='cast', icons=sidebar_icons, default_index=0, styles=sidebar_styles)
+
 
 # ===========================================================================
 # PAGINA 'INICIO'
@@ -211,7 +230,7 @@ if sidebar == 'Inicio':
   if uploaded_image is not None:
     
     st.session_state.uploaded_image = uploaded_image  # guardar en sesion
-    image, image_np = parse_image(uploaded_image)     # procesar imagen
+    image, image_cv2 = parse_image(uploaded_image)     # procesar imagen
 
     # mostrar la imagen original
     st.subheader('Imagen Original')
@@ -224,7 +243,8 @@ if sidebar == 'Inicio':
 # ===========================================================================
 if sidebar == 'Herramientas':
 
-  main_menu = build_toolbar_menu_content()  # mostrar la barra de herramientas
+  # construir y mostrar la barra de herramientas
+  main_menu = build_toolbar_menu_content()
 
   if main_menu == 'Escalado' and uploaded_image is not None:
     build_rescale_content(uploaded_image)
@@ -241,6 +261,9 @@ if sidebar == 'Herramientas':
   if main_menu == 'Suavizado' and uploaded_image is not None:
     build_smoothing_content(uploaded_image)
 
+  if main_menu == 'Brillo+Saturación' and uploaded_image is not None:
+    build_brightness_content(uploaded_image)
+
   if main_menu == 'Detección de Bordes' and uploaded_image is not None:
     build_edge_detection_content(uploaded_image)
 
@@ -249,7 +272,30 @@ if sidebar == 'Herramientas':
 # PAGINA 'ESTADISTICAS' (histograma, etc)
 # ===========================================================================
 if sidebar == 'Métricas':
-  st.write('Métricas de la imagen: histograma, etc ...')
+  st.subheader('Histograma')
+
+  if uploaded_image is not None:
+    image, image_cv2 = parse_image(uploaded_image)
+
+    # mostrar la imagen original
+    st.image(image, caption='imagen original', use_container_width=True)
+
+    # calcular el histograma
+    histogram = cv2.calcHist([image_cv2], [0], None, [256], [0, 256])
+    histogram = histogram.flatten() # convertir a lista 1D (para matplotlib)
+
+    # mostrar el histograma
+    plt.figure(figsize=(10, 5))
+    plt.bar(range(256), histogram)
+    plt.title("Histograma")
+    plt.xlabel("Niveles de intensidad")
+    plt.ylabel("Frecuencia")
+    plt.grid()
+    st.pyplot(plt)  # renderizar el gráfico
+
+  else:
+    st.text('👉🏻 Sube una imagen para visualizar sus métricas.')
+
 
 # ===========================================================================
 # PAGINA 'ACERCA DE'
