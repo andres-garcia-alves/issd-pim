@@ -213,7 +213,7 @@ def build_distortion_content(uploaded_image):
 
   processed_image = cv2.normalize(image_cv2, None, 0, 255, cv2.NORM_MINMAX) # normalizar a rango 0-255
   processed_image = processed_image.astype(np.uint8)              # covertir de float a byte para st.image()
-  build_preview_download(processed_image, 'bordes detectados')
+  build_preview_download(processed_image, 'imagen distorsionada')
 
 # construir un preview de la imagen y un boton de download
 def build_preview_download(processed_image, caption, use_container_width=True, checkbox_container_width=False):
