@@ -39,8 +39,8 @@ def get_image_data(image_cv2):
 
 # construir el contenido para la 'barra de herramientas'
 def build_toolbar_menu_content():
-  menu_options = ['Escalado', 'Rotación', 'Traslación', 'Escala de Grises', 'Suavizado', 'Brillo & Saturación', 'Detección de Bordes']
-  menu_icons   = ['arrows-fullscreen', 'arrow-counterclockwise', 'arrows-move', 'back', 'moon', 'brightness-high', 'arrow-down-right-square']
+  menu_options = ['Escalado', 'Rotación', 'Traslación', 'Escala de Grises', 'Suavizado', 'Brillo & Saturación', 'Detección de Bordes', 'Distorsión']
+  menu_icons   = ['arrows-fullscreen', 'arrow-counterclockwise', 'arrows-move', 'back', 'moon', 'brightness-high', 'arrow-down-right-square', 'brilliance']
   menu_styles  = {
     'icon': { 'color': 'white', 'font-size': '24px' },
     'nav-link': { 'font-size': '16px', 'text-align': 'center', 'margin': '0px', 'min-width': '100px', 'max-width': '130px' },
@@ -87,6 +87,10 @@ def build_rotate_content(uploaded_image):
   col1, col2 = st.columns(2) # sliders para ajustar los parámetros
   with col1:  angle = st.slider('Angulo', value=45, min_value=0, max_value=360, step=5)
   with col2:  scale = st.slider('Escala (tamaño original: 1.00)', value=1.0, min_value=0.1, max_value=2.0, step=0.1)
+  
+  # color de fondo
+  background_color = st.color_picker("Color de fondo", "#000000")
+  rgb_background = [int(background_color[i:i+2], 16) for i in (1, 3, 5)]
 
   # rotar imagen
   _, image_cv2 = parse_image(uploaded_image)
@@ -95,7 +99,7 @@ def build_rotate_content(uploaded_image):
 
   # crear la matriz de rotacion y aplicar la transformacion
   M = cv2.getRotationMatrix2D(center, angle, scale)
-  processed_image = cv2.warpAffine(image_cv2, M, (width, height))
+  processed_image = cv2.warpAffine(image_cv2, M, (width, height), borderValue=tuple(rgb_background))
   build_preview_download(processed_image, 'imagen rotada', True, True)
 
 # construir el contenido para la herramienta 'traslacion'
@@ -104,7 +108,6 @@ def build_traslation_content(uploaded_image):
 
   _, image_cv2 = parse_image(uploaded_image)
   height, width, _ = image_cv2.shape
-  #height, 
 
   col1, col2 = st.columns(2) # sliders para ajustar los parámetros
   with col1:  x_axis = st.slider('Eje X', value=0, min_value=-width, max_value=width, step=1)
@@ -183,7 +186,7 @@ def build_edge_detection_content(uploaded_image):
     build_preview_download(processed_image, 'bordes detectados')
 
   if sub_menu == 'Sobel':
-    kernel = st.slider('Tamaño de Kernel', value=1, min_value=1, max_value=25, step=2)
+    kernel = st.slider('Tamaño de Kernel', value=5, min_value=1, max_value=31, step=2)
 
     _, image_cv2 = parse_image(uploaded_image)
     image_cv2 = cv2.cvtColor(image_cv2, cv2.COLOR_RGB2GRAY)         # convertir a escala de grises
@@ -195,6 +198,22 @@ def build_edge_detection_content(uploaded_image):
     processed_image = cv2.normalize(sobel_comb, None, 0, 255, cv2.NORM_MINMAX) # normalizar a rango 0-255
     processed_image = processed_image.astype(np.uint8)              # covertir de float a byte para st.image()
     build_preview_download(processed_image, 'bordes detectados')
+
+# construir el contenido para la herramienta 'distorsionar'
+def build_distortion_content(uploaded_image):
+  _, image_cv2 = parse_image(uploaded_image)
+
+  loops = st.slider("Deformación", value=4, min_value=0, max_value=8, step=1)
+
+  # aplicar un sobel n-veces, sin la escala de grises previa
+  for i in range(loops):
+    sobel_x = cv2.Sobel(image_cv2, cv2.CV_64F, 1, 0, ksize=31)    # bordes horizontales
+    sobel_y = cv2.Sobel(image_cv2, cv2.CV_64F, 0, 1, ksize=31)    # bordes verticales
+    image_cv2 = cv2.magnitude(sobel_x, sobel_y)                   # magnitud combinada de los bordes
+
+  processed_image = cv2.normalize(image_cv2, None, 0, 255, cv2.NORM_MINMAX) # normalizar a rango 0-255
+  processed_image = processed_image.astype(np.uint8)              # covertir de float a byte para st.image()
+  build_preview_download(processed_image, 'bordes detectados')
 
 # construir un preview de la imagen y un boton de download
 def build_preview_download(processed_image, caption, use_container_width=True, checkbox_container_width=False):
@@ -266,6 +285,9 @@ if sidebar == 'Herramientas':
 
   if main_menu == 'Detección de Bordes' and uploaded_image is not None:
     build_edge_detection_content(uploaded_image)
+
+  if main_menu == 'Distorsión' and uploaded_image is not None:
+    build_distortion_content(uploaded_image)
 
 
 # ===========================================================================
