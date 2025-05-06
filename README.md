@@ -11,6 +11,7 @@
 - Clase 05 - Transformaciones
 - Clase 06 - Histogramas y Equalización
 - Parcial 01 - Proyecto con las herramientas y técnicas vistas en clase
+- Clase 07 - Esquinas & Caracteristicas
 
 &nbsp;
 
@@ -19,5 +20,6 @@
 v1.0.0 (2025.04.08) - Versión inicial.  
 v1.0.1 (2025.04.22) - Se agregan Clases 04 y 05.  
 v1.0.2 (2025.04.28) - Se agregan Clases 06 y Parcial 01.
+v1.0.3 (2025.05.06) - Se agrega Clase 07.
 
 &nbsp;
