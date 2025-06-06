@@ -16,6 +16,7 @@
 - Clase 09 - Procesamiento Morfologico
 - Clase 10 - Tecnicas Avanzadas
 - Clase 11 - Deteccion de Rostros
+- Parcial 02 - Proyecto temática 'Super Resolución'
 
 &nbsp;
 
@@ -27,5 +28,6 @@ v1.0.2 (2025.04.28) - Se agregan Clases 06 y Parcial 01.
 v1.0.3 (2025.05.06) - Se agrega Clase 07.  
 v1.0.4 (2025.05.13) - Se agrega Clase 08.  
 v1.0.5 (2025.06.06) - Se agregan Clase 09 al 11.  
+v1.0.6 (2025.06.06) - Se agrega Pacial 02.
 
 &nbsp;
