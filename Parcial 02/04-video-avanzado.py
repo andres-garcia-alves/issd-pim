@@ -18,13 +18,13 @@ video = cv2.VideoCapture(path_input + file_name_input)
 sr = cv2.dnn_superres.DnnSuperResImpl_create()
 
 # Cargar el modelo
-# sr.readModel(path_models + "LapSRN_x4.pb")  # opción ligera, alta calidad
-sr.readModel(path_models + "EDSR_x4.pb")  # opción pesada, muy alta calidad	
+sr.readModel(path_models + "LapSRN_x4.pb")  # opción ligera, alta calidad
+# sr.readModel(path_models + "EDSR_x4.pb")  # opción pesada, muy alta calidad	
 
 # Establecer el modelo y la escala (2x, 3x, 4x, 8x)
 scale = 4
-# sr.setModel("lapsrn", scale)
-sr.setModel("edsr", scale)
+sr.setModel("lapsrn", scale)
+# sr.setModel("edsr", scale)
 
 # Obtener las propiedades del video
 fps = video.get(cv2.CAP_PROP_FPS)
