@@ -51,8 +51,8 @@ while video.isOpened():
   frame_sr = sr.upsample(frame)
 
   # opcional: guardar los frames individuales
-  # cv2.imwrite(path_output + f"frames/frame_{i:04d}.jpg", frame_sr)
-  # i += 1
+  cv2.imwrite(path_output + f"frames/frame_{i:04d}.jpg", frame_sr)
+  i += 1
 
   # Escribir el nuevo frame al buffer de salida
   out.write(frame_sr)
