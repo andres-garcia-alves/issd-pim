@@ -3,10 +3,11 @@ import cv2
 # ------------------------------------------------------------
 # Ejemplo Básico de Super-Resolución de imágenes (con OpenCV)
 #
-# - familia ESPCN:  modelo ligero, calidad media
-# - familia FSRCNN: modelo ligero, calidad media
-# - familia LapSRN: modelo ligero, alta calidad
-# - familia EDSR:   modelo pesado, muy alta calidad
+# - familia ESPCN:        modelo ligero, calidad media
+# - familia FSRCNN:       modelo ligero, calidad media
+# - familia FSRCNN-small: modelo ligero, calidad baja
+# - familia LapSRN:       modelo ligero, alta calidad
+# - familia EDSR:         modelo pesado, muy alta calidad
 # ------------------------------------------------------------
 
 
