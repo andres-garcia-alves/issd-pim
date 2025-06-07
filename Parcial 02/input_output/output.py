@@ -1,11 +1,16 @@
-from enum import Enum
 import cv2
+from enum import Enum
+from input_output import input
 
+# Directorios de salida
 output_path_01 = "./data/output/01-imagen-basico/"
 output_path_02 = "./data/output/02-imagen-multimodelo/"
 output_path_03 = "./data/output/03-imagen-gif-animado/"
 output_path_04 = "./data/output/04-video-avanzado/"
 
+# Enumeraciones para los 'ejercicios'
+# - sirven para tipificar el ejercicio en cuestión, en lugar de usar un string cualquiera)
+# - evita errores de tipeo y mejora la legibilidad del código
 class Exercise(Enum):
   One = 1
   Two = 2
@@ -13,28 +18,43 @@ class Exercise(Enum):
   Four = 4
 
 
+# Mostrar una imagen por pantalla
 def show_image(img, title="imagen"):
   cv2.imshow(title, img)
   cv2.waitKey(0)
   cv2.destroyAllWindows()
 
 
+# Guardar una imagen
 def save_image(img, name, exercise):
-  file_path = ""
-  if exercise == Exercise.One:    file_path = output_path_01 + name + ".jpg"
-  elif exercise == Exercise.Two:  file_path = output_path_02 + name + ".jpg"
+  full_name = ""
+  if exercise == Exercise.One:    full_name = output_path_01 + name + ".jpg"
+  elif exercise == Exercise.Two:  full_name = output_path_02 + name + ".jpg"
   else:                           Exception("exercise inválido.")
 
-  cv2.imwrite(file_path, img)
+  cv2.imwrite(full_name, img)
 
 
-def save_gif(gif, name):
-  Exception("Falta implementar.")
+# Guardar un gif animado
+def save_gif(frames, name, duration):
+  full_name = output_path_03 + name + ".gif"
+  frames[0].save(full_name, save_all=True, append_images=frames[1:], duration=duration, loop=1)
 
 
-def save_video(video, name):
-  Exception("Falta implementar.")
+# Construir el path y nombre completo de un video
+def get_video_full_name(input_video: input.Videos = input.Videos.Fury):
+  video_name = input_video.value.split(".")[0]
+  video_ext = input_video.value.split(".")[1]
+
+  return output_path_04 + video_name + "_alta_res" + "." + video_ext
 
 
-def done(msg="Trabajo Terminado"):
+# Guardar un frame de un video
+def save_video_frame(img, name):
+  full_name = output_path_04 + "frames/" + name + ".jpg"
+  cv2.imwrite(full_name, img)
+
+
+# Mensaje de finalización
+def done(msg="Trabajo terminado."):
   print(msg)

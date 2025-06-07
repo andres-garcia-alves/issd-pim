@@ -1,13 +1,13 @@
-from enum import Enum
 import cv2
-from PIL import Image, ImageSequence
+from PIL import Image
+from enum import Enum
 
+# Directorio de entrada
 base_path = "./data/input/"
 
-image_file_name = "goku.jpg"
-gif_file_name = "homero.gif"
-video_file_name = "furia.mp4"
-
+# Enumeraciones para las 'imágenes', 'gifs' y 'videos'
+# - sirven para tipificar el archivo a cargar, en lugar de usar un string cualquiera)
+# - evita errores de tipeo y mejora la legibilidad del código
 class Images(Enum):
   Goku = "goku.jpg"
 
@@ -22,14 +22,16 @@ class Videos(Enum):
   Teletubies = "teletubies.mp4"
 
 
+# Cargar y retornar una imagen
 def load_image(image: Images = Images.Goku):
-  return cv2.imread(base_path + image_file_name)
+  return cv2.imread(base_path + image.value)
 
 
+# Cargar y retornar un gif animado
 def load_gif(gif: Gifs = Gifs.Homero):
   return Image.open(base_path + gif.value)
 
 
+# Cargar y retornar un video
 def load_video(video: Videos = Videos.Fury):
   return cv2.VideoCapture(base_path + video.value)
-  

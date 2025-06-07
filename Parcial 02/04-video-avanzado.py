@@ -1,62 +1,45 @@
-import cv2
-
 from input_output import input, output
-from processing import processing
+from processing import core_processing, video_processing
 
 # -----------------------------------------------------
 # Ejemplo de Super-Resolución para videos (con OpenCV)
 # -----------------------------------------------------
 
-path_output = "./data/output/04-video-avanzado/"
-
-file_name_output = "furia_alta_res.mp4"
-
 # Cargar el video
-video = input.load_video()
+video = input.load_video(input.Videos.Fury)
 
-# Crear la instancia para superresolución
-sr = cv2.dnn_superres.DnnSuperResImpl_create()
+# Instanciar y configurar un modelo de super-resolución
+sr = core_processing.sr_create_model(core_processing.Models.LapSRN_x4)  # opción ligera, calidad alta
+# sr = core_processing.sr_create_model(core_processing.Models.EDSR_x4)  # opción pesada, calidad muy alta
 
-# Cargar el modelo
-sr.readModel(processing.path_models + "LapSRN_x4.pb")  # opción ligera, alta calidad
-# sr.readModel(processing.path_models + "EDSR_x4.pb")  # opción pesada, muy alta calidad	
+# Obtener las propiedades del video y calcular el tamaño de salida
+fps, input_width, input_height = video_processing.get_video_properties(video)
+output_width, output_height = video_processing.calculate_output_size(input_width, input_height, scale=4)
 
-# Establecer el modelo y la escala (2x, 3x, 4x, 8x)
-scale = 4
-sr.setModel("lapsrn", scale)
-# sr.setModel("edsr", scale)
+# Crear el encoder de video (MPEG-4)
+mp4_encoder = video_processing.build_mp4_encoder()
 
-# Obtener las propiedades del video
-fps = video.get(cv2.CAP_PROP_FPS)
-frame_width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
-frame_height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
-
-# Tamaño de salida según la escala
-out_width, out_height = frame_width * scale, frame_height * scale
-
-# Crear el encoder de video y el buffer de salida
-fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # equivale a: 'm','p','4','v' (MPEG-4 video)
-out = cv2.VideoWriter(path_output + file_name_output, fourcc, fps, (out_width, out_height))
+# Crear el buffer de salida
+file_name = output.get_video_full_name(input.Videos.Fury)
+output_buffer = video_processing.create_output_buffer(file_name, mp4_encoder, fps, output_width, output_height)
 
 # Procesar los frames
 i = 0
 while video.isOpened():
 
-  # Leer un frame del video
-  # y detener el bucle si ya no quedan más frames (break)
+  # Leer de a 1 frame a la vez, y detener el bucle ('break') cuando ya no queden más
   ret, frame = video.read()
   if not ret: break
 
-  # Aplicar superresolución
+  # Aplicar la super-resolución
   frame_sr = sr.upsample(frame)
 
   # opcional: guardar los frames individuales
-  cv2.imwrite(path_output + f"frames/frame_{i:04d}.jpg", frame_sr)
+  output.save_video_frame(frame_sr, f"frame_{i:04d}")
   i += 1
 
   # Escribir el nuevo frame al buffer de salida
-  out.write(frame_sr)
+  output_buffer.write(frame_sr)
 
 # Liberar los recursos de la memoria
-video.release()
-out.release()
+video_processing.release_resources([video, output_buffer])
