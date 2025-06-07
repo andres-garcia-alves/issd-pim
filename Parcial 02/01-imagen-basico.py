@@ -1,5 +1,8 @@
 import cv2
 
+from input_output import input, output
+from processing import processing
+
 # ------------------------------------------------------------
 # Ejemplo Básico de Super-Resolución de imágenes (con OpenCV)
 #
@@ -10,23 +13,15 @@ import cv2
 # - familia EDSR:         modelo pesado, muy alta calidad
 # ------------------------------------------------------------
 
-
-path_models = "./models/"
-path_input = "./input/"
-path_output = "./output/01-imagen-basico/"
-
-file_name_input = "goku.jpg"
-file_name_output = "goku_alta_res.jpg"
-
 # Cargar la imagen original
-img = cv2.imread(path_input + file_name_input)
+img = input.load_image()
 
 # Crear la instancia para superresolución
 sr = cv2.dnn_superres.DnnSuperResImpl_create()
 
 # Cargar el modelo
-sr.readModel(path_models + "LapSRN_x8.pb")  # opción ligera, alta calidad
-# sr.readModel(path_models + "EDSR_x3.pb")  # opción pesada, muy alta calidad
+sr.readModel(processing.path_models + "LapSRN_x8.pb")  # opción ligera, alta calidad
+# sr.readModel(processing.path_models + "EDSR_x3.pb")  # opción pesada, muy alta calidad
 
 # Establecer el modelo y la escala (2x, 3x, 4x, 8x)
 sr.setModel("lapsrn", 8)
@@ -36,9 +31,6 @@ sr.setModel("lapsrn", 8)
 img_scaled = sr.upsample(img)
 
 # Guardar y mostrar resultado
-cv2.imwrite(path_output + file_name_output, img_scaled)
-cv2.imshow("Resultado", img_scaled)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-
-print('Trabajo terminado.')
+output.save_image(img_scaled, "goku_alta_res", output.Exercise.One)
+output.show_image(img_scaled, "Resultado")
+output.done()

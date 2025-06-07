@@ -1,25 +1,27 @@
 import cv2
 
+from input_output import input, output
+from processing import processing
+
 # -----------------------------------------------------
 # Ejemplo de Super-Resolución para videos (con OpenCV)
 # -----------------------------------------------------
 
-path_models = "./models/"
-path_input = "./input/"
-path_output = "./output/04-video-avanzado/"
+path_input = "./data/input/"
+path_output = "./data/output/04-video-avanzado/"
 
 file_name_input = "furia.mp4"
 file_name_output = "furia_alta_res.mp4"
 
 # Cargar el video
-video = cv2.VideoCapture(path_input + file_name_input)
+video = cv2.VideoCapture(input.get_video_path())
 
 # Crear la instancia para superresolución
 sr = cv2.dnn_superres.DnnSuperResImpl_create()
 
 # Cargar el modelo
-sr.readModel(path_models + "LapSRN_x4.pb")  # opción ligera, alta calidad
-# sr.readModel(path_models + "EDSR_x4.pb")  # opción pesada, muy alta calidad	
+sr.readModel(processing.path_models + "LapSRN_x4.pb")  # opción ligera, alta calidad
+# sr.readModel(processing.path_models + "EDSR_x4.pb")  # opción pesada, muy alta calidad	
 
 # Establecer el modelo y la escala (2x, 3x, 4x, 8x)
 scale = 4

@@ -1,27 +1,27 @@
 import numpy as np
-import cv2
 from PIL import Image, ImageSequence
+import cv2
+
+from input_output import input, output
+from processing import processing
 
 # -----------------------------------------------------------------
 # Ejemplo de Super-Resolución para gif animados (con PIL + OpenCV)
 # -----------------------------------------------------------------
 
-path_models = "./models/"
-path_input = "./input/"
-path_output = "./output/03-imagen-gif-animado/"
+path_output = "./data/output/03-imagen-gif-animado/"
 
-file_name_input = "homero.gif"
 file_name_output = "homero_alta_res.gif"
 
 # Cargar el GIF original con PIL
-gif = Image.open(path_input + file_name_input)
+gif = Image.open(input.get_gif_path())
 
 # Crear objeto de superresolución
 sr = cv2.dnn_superres.DnnSuperResImpl_create()
 
 # Cargar el modelo
-sr.readModel(path_models + "ESPCN_x2.pb")   # opción ligera, calidad media
-# sr.readModel(path_models + "EDSR_x2.pb")  # opción pesada, muy alta calidad	
+sr.readModel(processing.path_models + "ESPCN_x2.pb")   # opción ligera, calidad media
+# sr.readModel(processing.path_models + "EDSR_x2.pb")  # opción pesada, muy alta calidad	
 
 # Establecer el modelo y la escala (2x, 3x, 4x, 8x)
 sr.setModel("espcn", 2)
