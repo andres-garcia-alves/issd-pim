@@ -1,5 +1,6 @@
 from enum import Enum
 import cv2
+from PIL import Image, ImageSequence
 
 base_path = "./data/input/"
 
@@ -26,8 +27,9 @@ def load_image(image: Images = Images.Goku):
 
 
 def load_gif(gif: Gifs = Gifs.Homero):
-  return cv2.imread(base_path + gif_file_name)
+  return Image.open(base_path + gif.value)
 
 
 def load_video(video: Videos = Videos.Fury):
-  return cv2.imread(base_path + video_file_name)
+  return cv2.VideoCapture(base_path + video.value)
+  

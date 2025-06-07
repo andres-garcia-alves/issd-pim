@@ -13,7 +13,7 @@ path_output = "./data/output/02-imagen-multimodelo/"
 
 
 # Cargar la imagen original
-img = input.load_image(input.Images.Goku)
+img = input.load_image()
 
 # Crear la instancia para superresolución
 sr = cv2.dnn_superres.DnnSuperResImpl_create()

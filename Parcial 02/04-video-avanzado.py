@@ -7,14 +7,12 @@ from processing import processing
 # Ejemplo de Super-Resolución para videos (con OpenCV)
 # -----------------------------------------------------
 
-path_input = "./data/input/"
 path_output = "./data/output/04-video-avanzado/"
 
-file_name_input = "furia.mp4"
 file_name_output = "furia_alta_res.mp4"
 
 # Cargar el video
-video = cv2.VideoCapture(input.get_video_path())
+video = input.load_video()
 
 # Crear la instancia para superresolución
 sr = cv2.dnn_superres.DnnSuperResImpl_create()

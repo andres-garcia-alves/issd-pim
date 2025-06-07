@@ -14,7 +14,7 @@ path_output = "./data/output/03-imagen-gif-animado/"
 file_name_output = "homero_alta_res.gif"
 
 # Cargar el GIF original con PIL
-gif = Image.open(input.get_gif_path())
+gif = input.load_gif()
 
 # Crear objeto de superresolución
 sr = cv2.dnn_superres.DnnSuperResImpl_create()
