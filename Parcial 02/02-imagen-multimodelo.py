@@ -1,5 +1,5 @@
 from input_output import input, output
-from processing import core_processing
+from processing import core_processing, image_processing
 
 # -----------------------------------------------------------------
 # Ejemplo Multimodelo de Super-Resolución de imágenes (con OpenCV)
@@ -15,7 +15,7 @@ for model in core_processing.Models:
     sr = core_processing.sr_create_model(model)
 
     # Aplicar la super-resolución
-    img_scaled = sr.upsample(img)
+    img_scaled = image_processing.scale(sr, img)
     
     # Guardar el resultado
     file_name = model.value.lower() + "_alta_res"

@@ -1,5 +1,5 @@
 from input_output import input, output
-from processing import core_processing, video_processing
+from processing import core_processing, image_processing, video_processing
 
 # -----------------------------------------------------
 # Ejemplo de Super-Resolución para videos (con OpenCV)
@@ -32,14 +32,15 @@ while video.isOpened():
   if not ret: break
 
   # Aplicar la super-resolución
-  frame_sr = sr.upsample(frame)
+  frame_scaled = image_processing.scale(sr, frame)
 
   # opcional: guardar los frames individuales
-  output.save_video_frame(frame_sr, f"frame_{i:04d}")
+  output.save_video_frame(frame_scaled, f"frame_{i:04d}")
   i += 1
 
   # Escribir el nuevo frame al buffer de salida
-  output_buffer.write(frame_sr)
+  output_buffer.write(frame_scaled)
 
 # Liberar los recursos de la memoria
 video_processing.release_resources([video, output_buffer])
+output.done()

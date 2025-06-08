@@ -1,5 +1,5 @@
 from input_output import input, output
-from processing import core_processing
+from processing import core_processing, image_processing
 
 # ------------------------------------------------------------
 # Ejemplo Básico de Super-Resolución de imágenes (con OpenCV)
@@ -19,10 +19,9 @@ sr = core_processing.sr_create_model(core_processing.Models.LapSRN_x8)  # opció
 # sr = processing.sr_create_model(processing.Models.EDSR_x3)  # opción pesada, calidad muy alta
 
 # Aplicar la super-resolución
-img_scaled = sr.upsample(img)
+img_scaled = image_processing.scale(sr, img)
 
 # Guardar y mostrar el resultado
 output.save_image(img_scaled, "goku_alta_res", output.Exercise.One)
 output.show_image(img_scaled, "Resultado")
-
 output.done()
