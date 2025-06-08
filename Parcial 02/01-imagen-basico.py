@@ -16,7 +16,7 @@ img = input.load_image(input.Images.Goku)
 
 # Instanciar y configurar un modelo de super-resolución
 sr = core_processing.sr_create_model(core_processing.Models.LapSRN_x8)  # opción ligera, calidad alta
-# sr = processing.sr_create_model(processing.Models.EDSR_x3)  # opción pesada, calidad muy alta
+# sr = core_processing.sr_create_model(core_processing.Models.EDSR_x3)  # opción pesada, calidad muy alta
 
 # Aplicar la super-resolución
 img_scaled = image_processing.scale(sr, img)

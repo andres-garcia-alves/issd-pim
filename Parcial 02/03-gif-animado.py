@@ -1,5 +1,4 @@
 from PIL import ImageSequence
-
 from input_output import input, output
 from processing import core_processing, image_processing
 
@@ -21,13 +20,13 @@ frames_output = []
 for frame in ImageSequence.Iterator(gif):
     
   # Convertir a array de OpenCV (RGB -> BGR)
-  frame_cv = image_processing.convert_pil_to_cv2(frame)
+  frame_cv = image_processing.pil_to_cv2(frame)
 
   # Aplicar la super-resolución
   frame_scaled = image_processing.scale(sr, frame_cv)
 
   # Convertir de nuevo a PIL (BGR -> RGB)
-  frame_pil = image_processing.convert_cv2_to_pil(frame_scaled)
+  frame_pil = image_processing.cv2_to_pil(frame_scaled)
 
   # Añadir el frame procesado a la lista
   frames_output.append(frame_pil)
