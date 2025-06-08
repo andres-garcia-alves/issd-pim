@@ -19,9 +19,17 @@ class Exercise(Enum):
 
 
 # Mostrar una imagen por pantalla
-def show_image(img, title="imagen"):
-  cv2.imshow(title, img)
+def show_image(image, title="imagen"):
+  cv2.imshow(title, image)
   cv2.waitKey(0)
+  cv2.destroyAllWindows()
+
+
+# Mostrar varias imagenes por pantalla
+def show_images(images, title="imagenes"):
+  for image in images:
+    cv2.imshow(title, image)
+    cv2.waitKey(0)
   cv2.destroyAllWindows()
 
 

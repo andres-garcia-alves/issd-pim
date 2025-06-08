@@ -23,5 +23,5 @@ img_scaled = image_processing.scale(sr, img)
 
 # Guardar y mostrar el resultado
 output.save_image(img_scaled, "goku_alta_res", output.Exercise.One)
-output.show_image(img_scaled, "Resultado")
+output.show_images([img, img_scaled], "Imagenes")
 output.done()
