@@ -22,6 +22,6 @@ sr = core_processing.sr_create_model(core_processing.Models.LapSRN_x8)  # opció
 img_scaled = image_processing.scale(sr, img)
 
 # Guardar y mostrar el resultado
-output.save_image(img_scaled, "goku_alta_res", output.Exercise.One)
-output.show_images([img, img_scaled], "Imagenes")
+output.save_image(img_scaled, "goku_alta_res", output.Exercise.Two)
+output.show_images([img, img_scaled], ["Imagen original", "Imagen con Super-Resolucion"])
 output.done()

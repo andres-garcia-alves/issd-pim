@@ -9,7 +9,10 @@ base_path = "./data/input/"
 # - sirven para tipificar el archivo a cargar, en lugar de usar un string cualquiera)
 # - evita errores de tipeo y mejora la legibilidad del código
 class Images(Enum):
+  Dado = "dado.jpg"
   Goku = "goku.jpg"
+  Pelota = "pelota.jpg"
+  Pelota2 = "pelota2.jpg"
 
 class Gifs(Enum):
   Homero = "homero.gif"

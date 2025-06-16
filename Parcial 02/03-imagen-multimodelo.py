@@ -19,6 +19,6 @@ for model in core_processing.Models:
     
     # Guardar el resultado
     file_name = model.value.lower() + "_alta_res"
-    output.save_image(img_scaled, file_name, output.Exercise.Two)
+    output.save_image(img_scaled, file_name, output.Exercise.Three)
     
 output.done()

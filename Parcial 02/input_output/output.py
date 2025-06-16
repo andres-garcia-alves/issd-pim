@@ -3,10 +3,11 @@ from enum import Enum
 from input_output import input
 
 # Directorios de salida
-output_path_01 = "./data/output/01-imagen-basico/"
-output_path_02 = "./data/output/02-imagen-multimodelo/"
-output_path_03 = "./data/output/03-imagen-gif-animado/"
-output_path_04 = "./data/output/04-video-avanzado/"
+output_path_01 = "./data/output/01-relleno-huecos/"
+output_path_02 = "./data/output/02-imagen-basico/"
+output_path_03 = "./data/output/03-imagen-multimodelo/"
+output_path_04 = "./data/output/04-imagen-gif-animado/"
+output_path_05 = "./data/output/05-video-avanzado/"
 
 # Enumeraciones para los 'ejercicios'
 # - sirven para tipificar el ejercicio en cuestión, en lugar de usar un string cualquiera)
@@ -16,6 +17,7 @@ class Exercise(Enum):
   Two = 2
   Three = 3
   Four = 4
+  Five = 5
 
 
 # Mostrar una imagen por pantalla
@@ -26,8 +28,12 @@ def show_image(image, title="imagen"):
 
 
 # Mostrar varias imagenes por pantalla
-def show_images(images, title="imagenes"):
-  for image in images:
+def show_images(images=[], titles=[]):
+
+  # emparejar las imagenes con sus titulos
+  images_titles = zip(images, titles)
+
+  for image, title in images_titles:
     cv2.imshow(title, image)
     cv2.waitKey(0)
   cv2.destroyAllWindows()
@@ -36,16 +42,17 @@ def show_images(images, title="imagenes"):
 # Guardar una imagen
 def save_image(img, name, exercise):
   full_name = ""
-  if exercise == Exercise.One:    full_name = output_path_01 + name + ".jpg"
-  elif exercise == Exercise.Two:  full_name = output_path_02 + name + ".jpg"
-  else:                           Exception("exercise inválido.")
+  if exercise == Exercise.One:      full_name = output_path_01 + name + ".jpg"
+  elif exercise == Exercise.Two:    full_name = output_path_02 + name + ".jpg"
+  elif exercise == Exercise.Three:  full_name = output_path_03 + name + ".jpg"
+  else:                             Exception("exercise inválido.")
 
   cv2.imwrite(full_name, img)
 
 
 # Guardar un gif animado
 def save_gif(frames, name, duration):
-  full_name = output_path_03 + name + ".gif"
+  full_name = output_path_04 + name + ".gif"
   frames[0].save(full_name, save_all=True, append_images=frames[1:], duration=duration, loop=1)
 
 
@@ -54,12 +61,12 @@ def get_video_full_name(input_video: input.Videos = input.Videos.Fury):
   video_name = input_video.value.split(".")[0]
   video_ext = input_video.value.split(".")[1]
 
-  return output_path_04 + video_name + "_alta_res" + "." + video_ext
+  return output_path_05 + video_name + "_alta_res" + "." + video_ext
 
 
 # Guardar un frame de un video
 def save_video_frame(img, name):
-  full_name = output_path_04 + "frames/" + name + ".jpg"
+  full_name = output_path_05 + "frames/" + name + ".jpg"
   cv2.imwrite(full_name, img)
 
 
